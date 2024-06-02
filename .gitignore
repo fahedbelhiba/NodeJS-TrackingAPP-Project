@@ -30,6 +30,13 @@ yarn.lock
 
 # Ignore the public directory if generated dynamically (uncomment if applicable)
 # public/
+<<<<<<< HEAD
 # Ignore temporary files
 *.swp
 *.swo
+=======
+
+# Ignore temporary files
+*.swp
+*.swo
+>>>>>>> cdd1db2 (First commit)
