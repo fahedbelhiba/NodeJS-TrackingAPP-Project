@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Monitoring trucks</title>
+  <style>
+    #messages {
+      margin-top: 20px;
+    }
+    .message {
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #ddd;
+    }
+    .alert {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <h1>Monitoring Client</h1>
+  <div id="messages"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const socket = io("http://localhost:5000");
+
+      socket.on('connect', () => {
+        console.log('Connected to Socket.IO server');
+      });
+
+ 
+
+      socket.on('alert', (alert) => {
+        console.log('Alert received: ' + alert.message);
+        const messagesDiv = document.getElementById('messages');
+        const alertElem = document.createElement('div');
+        alertElem.className = 'message alert';
+        alertElem.textContent = `${alert.message} (Vehicle ID: ${alert.vehicleId})`;
+        messagesDiv.appendChild(alertElem);
+      });
+
+      socket.on('position', (data) => {
+        console.log(`Position received for ${data.vehicleId}: `, data.position);
+        const messagesDiv = document.getElementById('messages');
+        const positionElem = document.createElement('div');
+        positionElem.className = 'message';
+        positionElem.textContent = `Vehicle ${data.vehicleId} is at (${data.position.lat.toFixed(2)}, ${data.position.lon.toFixed(2)})`;
+        messagesDiv.appendChild(positionElem);
+      });
+
+      socket.on('disconnect', () => {
+        console.log('Disconnected from Socket.IO server');
+      });
+
+      socket.on('error', (error) => {
+        console.error('Socket.IO error:', error);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -4,13 +4,11 @@ import fs from 'fs';
 const publicKey = fs.readFileSync("public_key.pem", "utf8");
 
 
- 
 
   
 const isAuthenticated = (req, res, next) => {
       
   const token = req.cookies.authToken;
-  console.log(token);
 
   if (!token) {
     return res.status(401).json({ message: "Unauthorized" });

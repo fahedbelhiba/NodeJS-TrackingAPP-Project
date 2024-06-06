@@ -6,10 +6,14 @@ import User from "../../../models/user/index.js";
 };
 
 
+
  const findUserByEmail = async (email) => {
   return await User.findOne({ email });
 };
 
+const deleteUser = async (userId) => {
+  return await User.findByIdAndDelete(userId);
+};
 
 
-export { addUser, findUserByEmail };
+export { addUser, findUserByEmail, deleteUser };

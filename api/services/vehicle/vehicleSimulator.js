@@ -1,25 +1,24 @@
-import EventEmitter from "events";
+import EventEmitter from 'events';
 
 class VehicleSimulator extends EventEmitter {
-  constructor() {
+  constructor(io) {
     super();
     this.vehicles = {};
-    this.immobilityThreshold = 10000; // 10 secondes en millisecondes pour la simulation
-    this.checkInterval = 2000; // 2 secondes
-    this.immobilityProbability = 0.1; // 10% de probabilité de rester immobile à chaque cycle
+    this.immobilityThreshold = 10000; 
+    this.checkInterval = 2000; 
+    this.immobilityProbability = 0.1;
+    this.io = io; 
   }
 
-  // Fonction pour simuler la génération de positions aléatoires
   generateRandomPosition() {
     const lat = Math.random() * 180 - 90;
     const lon = Math.random() * 360 - 180;
     return { lat, lon };
   }
 
-  // Fonction pour démarrer la simulation
   start() {
     setInterval(() => {
-      const vehicleId = "vehicle-" + Math.floor(Math.random() * 10); // Simuler 10 véhicules
+      const vehicleId = 'vehicle-' + Math.floor(Math.random() * 10); 
       const currentVehicle = this.vehicles[vehicleId] || {
         position: this.generateRandomPosition(),
         timestamp: Date.now(),
@@ -27,7 +26,6 @@ class VehicleSimulator extends EventEmitter {
       };
 
       if (Math.random() < this.immobilityProbability) {
-        // 10% de probabilité que le véhicule reste immobile
         currentVehicle.immobile = true;
       } else {
         currentVehicle.position = this.generateRandomPosition();
@@ -37,17 +35,17 @@ class VehicleSimulator extends EventEmitter {
 
       if (currentVehicle.immobile) {
         if (timestamp - currentVehicle.timestamp > this.immobilityThreshold) {
-          this.emit("alert", {
+          this.io.emit('alert', {
             vehicleId,
             message: `Vehicle ${vehicleId} is immobile for too long!`,
           });
         }
       } else {
-        currentVehicle.timestamp = timestamp; // Reset timestamp si le véhicule bouge
+        currentVehicle.timestamp = timestamp; // Reset timestamp if the vehicle moves
       }
 
       this.vehicles[vehicleId] = currentVehicle;
-      this.emit("position", {
+      this.io.emit('position', {
         vehicleId,
         position: currentVehicle.position,
         timestamp,
