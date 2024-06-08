@@ -11,8 +11,8 @@ class VehicleSimulator extends EventEmitter {
   }
 
   generateRandomPosition() {
-    const lat = Math.random() * 180 - 90;
-    const lon = Math.random() * 360 - 180;
+    const lat = Math.abs(Math.random() * 180 - 90);
+    const lon = Math.abs(Math.random() * 360 - 180);
     return { lat, lon };
   }
 

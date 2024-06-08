@@ -14,10 +14,12 @@ const isAuthenticated = (req, res, next) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  jwt.verify(token, publicKey, (err, decoded) => {
+  jwt.verify(token, publicKey, (err, decodedToken) => {
     if (err) {
       return res.status(401).json({ message: "Unauthorized"});
     }
+    
+    req.userId = decodedToken._id;
 
     // Token is valid, proceed to the next middleware
     next();

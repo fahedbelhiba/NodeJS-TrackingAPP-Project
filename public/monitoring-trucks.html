@@ -2,6 +2,12 @@
 <html>
 <head>
   <title>Monitoring trucks</title>
+  <link
+  rel="stylesheet"
+  type="text/css"
+  href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css"
+/>
+<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
   <style>
     #messages {
       margin-top: 20px;
@@ -18,13 +24,13 @@
   </style>
 </head>
 <body>
-  <h1>Monitoring Client</h1>
+  <h1>Monitoring trucks</h1>
   <div id="messages"></div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const socket = io("http://localhost:5000");
+      const socket = io("https://localhost:5000");
 
       socket.on('connect', () => {
         console.log('Connected to Socket.IO server');
@@ -42,12 +48,14 @@
       });
 
       socket.on('position', (data) => {
-        console.log(`Position received for ${data.vehicleId}: `, data.position);
         const messagesDiv = document.getElementById('messages');
         const positionElem = document.createElement('div');
         positionElem.className = 'message';
         positionElem.textContent = `Vehicle ${data.vehicleId} is at (${data.position.lat.toFixed(2)}, ${data.position.lon.toFixed(2)})`;
         messagesDiv.appendChild(positionElem);
+        // emit the position to the server 
+        socket.emit('position', data);
+   
       });
 
       socket.on('disconnect', () => {
@@ -58,6 +66,33 @@
         console.error('Socket.IO error:', error);
       });
     });
+    let center = [4, 52];
+    const map = tt.map({
+      key: "qTfnru069EjbkD25FGxgbiHRD1heAMB3",
+      container: "map",
+      center: center,
+      zoom: 15
+      
+    });
+    map.on('load', () =>  {
+      new tt.Marker().setLngLat(center).addTo(map);
+    });
+
   </script>
+  <h1>Monitoring Map</h1>
+  <div id="map" style="width: 100%; height: 100%;"></div>
+
 </body>
+</html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css"
+    />
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
+  </head>
+ 
+  </body>
 </html>
