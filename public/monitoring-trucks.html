@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Monitoring trucks</title>
-  <link
-  rel="stylesheet"
-  type="text/css"
-  href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css"
-/>
-<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
+  <title>Monitoring Trucks</title>
+  <link rel="stylesheet" type="text/css" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css" />
+  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
   <style>
+    body {
+      display: flex;
+      justify-content: space-between;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    #messages-container {
+      width: 40%;
+      padding: 20px;
+      overflow-y: auto; 
+      height: 100vh; 
+    }
     #messages {
       margin-top: 20px;
     }
@@ -21,41 +29,91 @@
       background-color: #f8d7da;
       color: #721c24;
     }
+    #map {
+      width: 60%;
+      height: 100vh; 
+    }
+    .marker {
+      width: 30px;
+      height: 30px;
+      background-size: cover;
+    }
   </style>
 </head>
 <body>
-  <h1>Monitoring trucks</h1>
-  <div id="messages"></div>
+  <div id="messages-container">
+    <h1>Monitoring Trucks</h1>
+    <div id="messages"></div>
+  </div>
+  <div id="map"></div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const socket = io("https://localhost:5000");
+      const map = tt.map({
+        key: 'qTfnru069EjbkD25FGxgbiHRD1heAMB3', 
+        container: 'map',
+        center: [0, 0], 
+        zoom: 2 
+      });
+
+      const vehicleMarkers = {};
+      const vehicleMessages = {};
+      const carIcon = 'https://cdn-icons-png.flaticon.com/512/870/870130.png'; 
+      const carIconRed = 'https://cdn-icons-png.flaticon.com/512/7723/7723103.png'; 
 
       socket.on('connect', () => {
         console.log('Connected to Socket.IO server');
       });
 
- 
-
       socket.on('alert', (alert) => {
         console.log('Alert received: ' + alert.message);
         const messagesDiv = document.getElementById('messages');
-        const alertElem = document.createElement('div');
-        alertElem.className = 'message alert';
-        alertElem.textContent = `${alert.message} (Vehicle ID: ${alert.vehicleId})`;
-        messagesDiv.appendChild(alertElem);
+        const vehicleId = alert.vehicleId;
+
+        if (vehicleMessages[vehicleId]) {
+          const alertElem = vehicleMessages[vehicleId];
+          alertElem.className = 'message alert';
+          alertElem.textContent = `${alert.message} (Vehicle ID: ${vehicleId}) - ALERT`;
+        } else {
+          const alertElem = document.createElement('div');
+          alertElem.className = 'message alert';
+          alertElem.textContent = `${alert.message} (Vehicle ID: ${vehicleId}) - ALERT`;
+          messagesDiv.appendChild(alertElem);
+          vehicleMessages[vehicleId] = alertElem;
+        }
+
+        if (vehicleMarkers[vehicleId]) {
+          const markerElement = vehicleMarkers[vehicleId].getElement();
+          markerElement.style.backgroundImage = `url(${carIconRed})`;
+          
+        }
       });
 
       socket.on('position', (data) => {
+        const { vehicleId, position } = data;
         const messagesDiv = document.getElementById('messages');
-        const positionElem = document.createElement('div');
-        positionElem.className = 'message';
-        positionElem.textContent = `Vehicle ${data.vehicleId} is at (${data.position.lat.toFixed(2)}, ${data.position.lon.toFixed(2)})`;
-        messagesDiv.appendChild(positionElem);
-        // emit the position to the server 
-        socket.emit('position', data);
-   
+
+        if (vehicleMessages[vehicleId]) {
+          vehicleMessages[vehicleId].textContent = `Vehicle ${vehicleId} is at (${position.lat.toFixed(2)}, ${position.lon.toFixed(2)})`;
+        } else {
+          const positionElem = document.createElement('div');
+          positionElem.className = 'message';
+          positionElem.textContent = `Vehicle ${vehicleId} is at (${position.lat.toFixed(2)}, ${position.lon.toFixed(2)})`;
+          messagesDiv.appendChild(positionElem);
+          vehicleMessages[vehicleId] = positionElem;
+        }
+
+        if (vehicleMarkers[vehicleId]) {
+          vehicleMarkers[vehicleId].setLngLat([position.lon, position.lat]);
+        } else {
+          const markerElement = document.createElement('div');
+          markerElement.className = 'marker';
+          markerElement.style.backgroundImage = `url(${carIcon})`;
+          const marker = new tt.Marker({ element: markerElement }).setLngLat([position.lon, position.lat]).addTo(map);
+          vehicleMarkers[vehicleId] = marker;
+        }
       });
 
       socket.on('disconnect', () => {
@@ -66,33 +124,6 @@
         console.error('Socket.IO error:', error);
       });
     });
-    let center = [4, 52];
-    const map = tt.map({
-      key: "qTfnru069EjbkD25FGxgbiHRD1heAMB3",
-      container: "map",
-      center: center,
-      zoom: 15
-      
-    });
-    map.on('load', () =>  {
-      new tt.Marker().setLngLat(center).addTo(map);
-    });
-
   </script>
-  <h1>Monitoring Map</h1>
-  <div id="map" style="width: 100%; height: 100%;"></div>
-
 </body>
-</html>
-<html>
-  <head>
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css"
-    />
-    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
-  </head>
- 
-  </body>
 </html>
