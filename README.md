@@ -52,11 +52,11 @@ or you can use a online generator and paste the `private`and `public` keys in fi
 
 ### Scripts
 
-- **start**: Uses nodemon to start the server (server.js).
+- **start**: Uses nodemon to start the server (server.js)   
 
-  > [!WARNING]
-  >
-  > in this project i'm working with ecmascript6 (ES6)   so make sure that you have `"type":"module"` in your `package.json` file
+> [!WARNING]
+>
+> in this project i'm working with ecmascript6 (ES6)   so make sure that you have `"type":"module"` in your `package.json` file
 
   
 ### Setting Up MongoDB Connection with Mongoose
