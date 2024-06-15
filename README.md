@@ -104,7 +104,7 @@ const mongoUri = "mongodb://localhost:27017/project_npm";
         "message": "agent created",
         "user": {
             "email": "belhibaffaheds@outlook.fr",
-            "_id": "666d73b6fe7dc026a60c009a
+            "_id": "666d73b6fe7dc026a60c009a"
     }
     ```
     > [!IMPORTANT]
@@ -116,8 +116,8 @@ const mongoUri = "mongodb://localhost:27017/project_npm";
       - Error Response (400) => validation error:
   
     ```json
-    {"message": "This mail already exists"} or 
-    {"message": "Please provide a valid email"} or
+    {"message": "This mail already exists"} "or"
+    {"message": "Please provide a valid email"} "or"
     {"message": "Password must be at least 6 characters long"}
     ```
   
