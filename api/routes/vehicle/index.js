@@ -16,9 +16,9 @@ const io = new Server(server);
 
  router.get("/monitoring-trucks", (req, res) => {
      res.sendFile(path.join(__dirname, "./../../../public", "monitoring-trucks.html"));
-
+    
+    
     });
-
 
 
 

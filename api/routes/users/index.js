@@ -39,10 +39,11 @@ router.post("/adduser", validateUser, async (req, res) => {
 
     const token = await generateJwt(payload);
 
-    res.cookie("authToken", token, { httpOnly: true });
-
+    res.cookie('authToken', token, {httpOnly: true,secure: true,sameSite: 'strict'
+    });
+    
     return res.status(201).json({
-      message: "User created",
+      message: "agent created",
       user: { email: user.email, _id: user._id},
     });
   } catch (error) {
@@ -80,9 +81,9 @@ router.post("/login", validateUser, async (req, res) => {
 
     const token = await generateJwt(payload);
 
-    res.cookie("authToken", token, { httpOnly: true });
-
-    return res.status(200).json({ message: "User logged in" });
+  res.cookie('authToken', token, {httpOnly: true,secure: true,sameSite: 'strict'
+    });
+    return res.status(200).json({ message: "agent logged in" });
   } catch (error) {
     return res.status(500).json({ message: "An error occurred" });
   }
@@ -94,7 +95,7 @@ router.post("/logout", isAuthenticated, async (req, res) => {
     res.clearCookie("authToken");
 
 
-    return res.status(200).json({ message: "User logged out successfully" });
+    return res.status(200).json({ message: "agent logged out successfully" });
   } catch (error) {
     return res.status(500).json({ message: "An error occurred" });
   }

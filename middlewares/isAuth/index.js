@@ -3,25 +3,21 @@ import fs from 'fs';
 
 const publicKey = fs.readFileSync("public_key.pem", "utf8");
 
-
-
-  
 const isAuthenticated = (req, res, next) => {
-      
   const token = req.cookies.authToken;
 
   if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ message: "Unauthorized: Token not provided" });
   }
 
-  jwt.verify(token, publicKey, (err, decodedToken) => {
+  jwt.verify(token, publicKey, { algorithms: ['RS256'] }, (err, decodedToken) => {
     if (err) {
-      return res.status(401).json({ message: "Unauthorized"});
+      console.error('JWT Verification Error:', err);
+      return res.status(401).json({ message: "Unauthorized: Invalid token" });
     }
     
     req.userId = decodedToken._id;
 
-    // Token is valid, proceed to the next middleware
     next();
   });
 };

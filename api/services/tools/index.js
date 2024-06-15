@@ -9,6 +9,7 @@ const privateKey = fs.readFileSync("private_key.pem", "utf8");
   return await bcrypt.hash(password, salt);
 };
 
+
  const comparePassword = async (inputPassword, storedPassword) => {
   return await bcrypt.compare(inputPassword, storedPassword);
 };

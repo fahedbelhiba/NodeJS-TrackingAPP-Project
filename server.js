@@ -11,7 +11,6 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import VehicleSimulator from "./api/services/vehicle/vehicleSimulator.js";
 import { addTruckPosition } from "./api/services/vehicle/index.js";
-import { redirectToHTTPS } from 'express-http-to-https';
 import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,15 +19,14 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
-app.use(redirectToHTTPS([/localhost:(\d{4})/], [/\/insecure/], 301));
 app.use("/users", userRouter);
-app.use("/vehicles", isAuthenticated, vehicleRouter);
+app.use("/vehicles",isAuthenticated, vehicleRouter);
 
 
 
 
 // Create an HTTP server
-http.createServer(app).listen(6000);
+//const httpServer = http.createServer(app);
 const sslOptions = {
   key: fs.readFileSync(path.join(__dirname, 'server.key')),
   cert: fs.readFileSync(path.join(__dirname, 'server.cert'))
